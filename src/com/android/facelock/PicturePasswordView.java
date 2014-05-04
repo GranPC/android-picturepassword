@@ -6,20 +6,30 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Rect;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.util.TypedValue;
+import android.view.MotionEvent;
 import android.widget.ImageView;
 
 public class PicturePasswordView extends ImageView
 {
 	private int mSeed;
 	
-	private int mScrollX = 0;
-	private int mScrollY = 0;
+	private final boolean DEBUG = true;
+	
+	private float mScrollX = 0;
+	private float mScrollY = 0;
+	
+	private float mFingerX;
+	private float mFingerY;
 	
 	private static final int GRID_SIZE = 10;
 	private static final int FONT_SIZE = 20;
+	
+	private Rect mTextBounds;
 	
 	private Paint mPaint;
 	
@@ -48,6 +58,9 @@ public class PicturePasswordView extends ImageView
 		mPaint.setTextSize( TypedValue.applyDimension( TypedValue.COMPLEX_UNIT_DIP, FONT_SIZE, displayMetrics ) );
 		
 		mPaint.setAntiAlias( true );
+		
+		mTextBounds = new Rect();
+		mPaint.getTextBounds( "8", 0, 1, mTextBounds );
 	}
 
 	@Override
@@ -55,18 +68,64 @@ public class PicturePasswordView extends ImageView
 	{
 		super.onDraw( canvas );
 		
-		float drawX = canvas.getWidth() / GRID_SIZE / 3.0f;
+		final float cellSize = canvas.getWidth() / GRID_SIZE;
 		
-		for ( int x = 0; x < GRID_SIZE; x++ )
+		float drawX = -cellSize / 1.5F;
+		
+		for ( int x = -1; x < GRID_SIZE + 1; x++ )
 		{
-			float drawY = canvas.getHeight() / GRID_SIZE / 1.5f;
-			for ( int y = 0; y < GRID_SIZE; y++ )
+			float drawY = -mTextBounds.bottom + cellSize / 1.5F - cellSize;
+			
+			for ( int y = -1; y < GRID_SIZE + 1; y++ )
 			{
-				canvas.drawText( "8", drawX, drawY, mPaint );
-				drawY += canvas.getHeight() / GRID_SIZE;
+				if ( DEBUG )
+				{
+					if ( x == -1 || y == -1 || x == GRID_SIZE || y == GRID_SIZE )
+					{
+						mPaint.setColor( Color.RED );
+					}
+					else
+					{
+						mPaint.setColor( Color.WHITE );
+					}
+				}
+				
+				canvas.drawText( "8", drawX + mScrollX % cellSize, drawY + mScrollY % cellSize, mPaint );
+				drawY += cellSize;
 			}
 			
-			drawX += canvas.getWidth() / GRID_SIZE;
+			drawX += cellSize;
 		}
+	}
+	
+	@Override
+	public boolean onTouchEvent( MotionEvent event )
+	{
+		float x = event.getX();
+		float y = event.getY();
+		
+		
+		switch( event.getAction() )
+		{
+			case MotionEvent.ACTION_DOWN:
+				mFingerX = x;
+				mFingerY = y;
+				break;
+				
+			case MotionEvent.ACTION_MOVE:
+				float diffx = x - mFingerX;
+				float diffy = y - mFingerY;
+
+				mScrollX += diffx;
+				mScrollY += diffy;
+				
+				mFingerX = x;
+				mFingerY = y;
+				
+				invalidate();
+				break;
+		}
+
+		return true; // super.onTouchEvent( event );
 	}
 }
