@@ -18,7 +18,7 @@ public class PicturePasswordView extends ImageView
 {
 	private int mSeed;
 	
-	private final boolean DEBUG = true;
+	private final boolean DEBUG = false;
 	
 	private float mScrollX = 0;
 	private float mScrollY = 0;
@@ -37,7 +37,7 @@ public class PicturePasswordView extends ImageView
 	{
 		// TODO: bad
 		
-		return ( ( mSeed ^ ( x + 32 ) ) * ( y + 124 ) ) % 10;
+		return Math.abs( ( ( mSeed ^ ( ( x ^ 0x7FAF9385 ) + 32 * 0x445FEED ) ) * ( y + 1 * 0x0F00B48F ) ) % 10 );
 	}
 
 	public PicturePasswordView( Context context, AttributeSet attrs )
@@ -90,11 +90,24 @@ public class PicturePasswordView extends ImageView
 					}
 				}
 				
-				canvas.drawText( "8", drawX + mScrollX % cellSize, drawY + mScrollY % cellSize, mPaint );
+				int cellX = ( int ) ( x - mScrollX / cellSize );
+				int cellY = ( int ) ( y - mScrollY / cellSize );
+				
+				if ( mScrollX / cellSize <= 0 && cellX != 0 ) cellX--;
+				if ( mScrollY / cellSize <= 0 && cellY != 0 ) cellY--;
+			
+				Integer number = getNumberForXY( cellX, cellY );
+				
+				canvas.drawText( number.toString(), drawX + mScrollX % cellSize, drawY + mScrollY % cellSize, mPaint );
 				drawY += cellSize;
 			}
 			
 			drawX += cellSize;
+		}
+		
+		if ( DEBUG )
+		{
+			canvas.drawText( mScrollX / cellSize + "," + mScrollY / cellSize, 0, mTextBounds.bottom * 26.5f, mPaint );
 		}
 	}
 	
