@@ -1,0 +1,55 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical"
+    android:padding="@dimen/activity_horizontal_margin"
+    android:gravity="center_horizontal">
+
+    <TextView android:id="@+id/description"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:gravity="left"
+        android:text="@string/description"
+        android:layout_marginLeft="12.0dip"
+        android:layout_marginRight="12.0dip"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
+
+    <ImageView
+        android:id="@+id/exampleImage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="24dp"
+        android:src="@drawable/ic_launcher" />
+    
+    <TextView
+        android:id="@+id/requirements"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:gravity="left"
+        android:text="@string/requirements"
+        android:layout_marginLeft="12.0dip"
+        android:layout_marginRight="12.0dip"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
+    
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0dip"
+        android:layout_weight="1" />
+    
+    <LinearLayout
+        style="@style/SecurityPreferenceButtonContainer"
+        android:orientation="horizontal">
+
+        <!-- left : cancel -->
+        <Button android:id="@+id/cancel_button"
+            style="@style/SecurityPreferenceButton"
+            android:text="@string/cancel"/>
+
+        <!-- right : continue -->
+        <Button android:id="@+id/next_button"
+            style="@style/SecurityPreferenceButton"
+            android:text="@string/next"/>
+
+    </LinearLayout>
+
+</LinearLayout>
