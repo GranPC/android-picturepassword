@@ -7,9 +7,9 @@
 
     <ImageView
         android:id="@+id/chosenImage"
-        android:layout_width="240dp"
-        android:layout_height="240dp"
-        android:padding="24dp"
+        android:layout_width="300dp"
+        android:layout_height="300dp"
+        android:layout_margin="24dp"
         android:src="@drawable/ic_launcher" />
     
     <View

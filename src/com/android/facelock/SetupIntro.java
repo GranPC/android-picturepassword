@@ -1,12 +1,21 @@
 package com.android.facelock;
 
+import java.io.FileDescriptor;
+
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.ParcelFileDescriptor;
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.util.DisplayMetrics;
+import android.util.TypedValue;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.ImageView.ScaleType;
 
 public class SetupIntro extends Activity implements View.OnClickListener
 {
@@ -44,7 +53,33 @@ public class SetupIntro extends Activity implements View.OnClickListener
 		intent.setType( "image/*" );
 		startActivityForResult( intent, LOAD_IMAGE_CODE );
 	}
-	
+
+	public static int calculateInSampleSize( BitmapFactory.Options options, int reqWidth, int reqHeight )
+	{
+		// Raw height and width of image
+		final int height = options.outHeight;
+		final int width = options.outWidth;
+		int inSampleSize = 1;
+
+		if ( height > reqHeight || width > reqWidth )
+		{
+			final int halfHeight = height / 2;
+			final int halfWidth = width / 2;
+
+			// Calculate the largest inSampleSize value that is a power of 2 and
+			// keeps both height and width larger than the requested height and
+			// width.
+			
+			while ( ( halfHeight / inSampleSize ) > reqHeight
+					&& ( halfWidth / inSampleSize ) > reqWidth )
+			{
+				inSampleSize *= 2;
+			}
+		}
+
+		return inSampleSize;
+	}
+
 	@Override
 	public void onActivityResult( int requestCode, int resultCode, Intent resultData )
 	{
@@ -53,12 +88,50 @@ public class SetupIntro extends Activity implements View.OnClickListener
 			Uri uri = null;
 			if ( resultData != null )
 			{
-				uri = resultData.getData();
+				Bitmap image = null;
 				
 				mStep = STEP_CHOOSE_NUMBER;
 				setContentView( R.layout.activity_setup_number );
 				
-				setListeners();
+				final ImageView imageview = ( ImageView ) findViewById( R.id.chosenImage );
+				
+				DisplayMetrics metrics = getResources().getDisplayMetrics();
+				
+				int vw = ( int ) TypedValue.applyDimension( TypedValue.COMPLEX_UNIT_DIP, 300, metrics );
+				int vh = vw;
+				
+				uri = resultData.getData();
+				try
+				{
+					// TODO: move to another thread.
+					
+					ParcelFileDescriptor parcelFileDescriptor = getContentResolver().openFileDescriptor( uri, "r" );
+					FileDescriptor fileDescriptor = parcelFileDescriptor.getFileDescriptor();
+					
+					BitmapFactory.Options opts = new BitmapFactory.Options();
+					opts.inJustDecodeBounds = true;
+					
+					BitmapFactory.decodeFileDescriptor( fileDescriptor, null, opts );
+					
+					opts.inSampleSize = calculateInSampleSize( opts, vw, vh );
+					opts.inJustDecodeBounds = false;
+					
+					image = BitmapFactory.decodeFileDescriptor( fileDescriptor, null, opts );
+					
+					parcelFileDescriptor.close();
+				}
+				catch ( Exception e )
+				{
+					e.printStackTrace();
+				}
+				
+				if ( image != null )
+				{
+					imageview.setImageBitmap( image );
+					imageview.setScaleType( ScaleType.CENTER_CROP );
+					
+					setListeners();
+				}
 				
 				return;
 			}
