@@ -5,7 +5,7 @@
     android:padding="@dimen/activity_horizontal_margin"
     android:gravity="center_horizontal">
 
-    <ImageView
+    <com.android.facelock.PicturePasswordView
         android:id="@+id/chosenImage"
         android:layout_width="300dp"
         android:layout_height="300dp"
