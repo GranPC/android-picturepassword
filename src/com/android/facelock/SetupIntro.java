@@ -17,6 +17,9 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ImageView.ScaleType;
 import android.widget.NumberPicker;
+import android.widget.SeekBar;
+import android.widget.SeekBar.OnSeekBarChangeListener;
+import android.widget.TextView;
 import android.widget.NumberPicker.*;
 
 public class SetupIntro extends Activity implements View.OnClickListener
@@ -134,17 +137,35 @@ public class SetupIntro extends Activity implements View.OnClickListener
 					
 					imageview.setGridSize( 5 );
 					
-					final NumberPicker gridSize = ( NumberPicker ) findViewById( R.id.grid_size );
-					gridSize.setMinValue( 3 );
-					gridSize.setMaxValue( 10 );
-					gridSize.setValue( imageview.getGridSize() );
-					gridSize.setOnValueChangedListener( new OnValueChangeListener()
+					final SeekBar gridSize = ( SeekBar ) findViewById( R.id.grid_size );
+					gridSize.setMax( 8 - 4 );
+					gridSize.setProgress( imageview.getGridSize() - 4 );
+					
+					final String sizeTextOriginal = getResources().getString( R.string.grid_size );
+					final TextView sizeText = ( TextView ) findViewById( R.id.grid_size_text );
+					
+					sizeText.setText( sizeTextOriginal + " " + imageview.getGridSize() + "x" + imageview.getGridSize() );
+					
+					gridSize.setOnSeekBarChangeListener( new OnSeekBarChangeListener()
 					{
 						@Override
-						
-						public void onValueChange( NumberPicker picker, int old, int newValue )
+						public void onStopTrackingTouch( SeekBar seekBar )
 						{
-							imageview.setGridSize( newValue );
+						}
+
+						@Override
+						public void onProgressChanged( SeekBar seekBar, int progress, boolean fromUser )
+						{
+							if ( fromUser )
+							{
+								imageview.setGridSize( progress + 4 );
+								sizeText.setText( sizeTextOriginal + " " + ( progress + 4 ) + "x" + ( progress + 4 ) );
+							}
+						}
+
+						@Override
+						public void onStartTrackingTouch( SeekBar seekBar )
+						{
 						}
 					} );
 					

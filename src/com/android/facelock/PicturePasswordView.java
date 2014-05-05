@@ -117,7 +117,7 @@ public class PicturePasswordView extends ImageView
 	
 	public void setGridSize( int size )
 	{
-		if ( size > 3 && size < 10 )
+		if ( size > 3 && size <= 8 )
 		{
 			mGridSize = size;
 			invalidate();
