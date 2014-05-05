@@ -3,6 +3,7 @@ package com.android.facelock;
 import java.util.Random;
 
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -33,6 +34,8 @@ public class PicturePasswordView extends ImageView
 	private Paint mPaint;
 	
 	private int mGridSize;
+	
+	private boolean mShowNumbers;
 	
 	private int getNumberForXY( int x, int y )
 	{
@@ -65,12 +68,38 @@ public class PicturePasswordView extends ImageView
 		
 		mTextBounds = new Rect();
 		mPaint.getTextBounds( "8", 0, 1, mTextBounds );
+		
+		TypedArray a = context.getTheme().obtainStyledAttributes( attrs, R.styleable.PicturePasswordView, 0, 0 );
+
+		mShowNumbers = true;
+		
+		try
+		{
+			mShowNumbers = a.getBoolean( R.styleable.PicturePasswordView_showNumbers, true );
+		}
+		finally
+		{
+			a.recycle();
+		}
+	}
+	
+	public boolean isShowNumbers()
+	{
+		return mShowNumbers;
+	}
+	
+	public void setShowNumbers( boolean show )
+	{
+		mShowNumbers = show;
+		invalidate();
 	}
 
 	@Override
 	protected void onDraw( Canvas canvas )
 	{
 		super.onDraw( canvas );
+		
+		if ( !mShowNumbers ) return;
 		
 		final float cellSize = canvas.getWidth() / mGridSize;
 		
