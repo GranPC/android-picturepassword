@@ -2,25 +2,21 @@ package com.android.facelock;
 
 import java.io.FileDescriptor;
 
-import android.net.Uri;
-import android.os.Bundle;
-import android.os.ParcelFileDescriptor;
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
+import android.os.Bundle;
+import android.os.ParcelFileDescriptor;
 import android.util.DisplayMetrics;
 import android.util.TypedValue;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.ImageView.ScaleType;
-import android.widget.NumberPicker;
 import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.TextView;
-import android.widget.NumberPicker.*;
 
 public class SetupIntro extends Activity implements View.OnClickListener
 {
