@@ -36,9 +36,10 @@ public class PicturePasswordView extends ImageView
 	
 	private int getNumberForXY( int x, int y )
 	{
-		// TODO: bad
-		
-		return Math.abs( ( ( mSeed ^ ( ( x ^ 0x7FAF9385 ) + 32 * 0x445FEED ) ) * ( y + 1 * 0x0F00B48F ) ) % 10 );
+		// TODO: still not great
+
+		mSeed ^= ( x * 2138105 + 1 ) * ( y + 1 * 23490 );
+		return Math.abs( mSeed % 10 );
 	}
 
 	public PicturePasswordView( Context context, AttributeSet attrs )
