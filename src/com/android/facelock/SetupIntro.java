@@ -1,8 +1,11 @@
 package com.android.facelock;
 
 import java.io.FileDescriptor;
+import java.util.Map;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -10,7 +13,10 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.ParcelFileDescriptor;
 import android.util.DisplayMetrics;
+import android.util.Log;
+import android.util.SparseIntArray;
 import android.util.TypedValue;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView.ScaleType;
@@ -26,6 +32,10 @@ public class SetupIntro extends Activity implements View.OnClickListener
 	private static final int LOAD_IMAGE_CODE = 1;
 	
 	private int mStep;
+	
+	private SparseIntArray mButtonIds;
+	private Dialog mDialog;
+	private int mChosenNumber;
 
 	@Override
 	protected void onCreate( Bundle savedInstanceState )
@@ -34,6 +44,19 @@ public class SetupIntro extends Activity implements View.OnClickListener
 		
 		super.onCreate( savedInstanceState );
 		setContentView( R.layout.activity_setup_intro );
+		
+		mButtonIds = new SparseIntArray();
+		
+		mButtonIds.put( R.id.button0, 0 );
+		mButtonIds.put( R.id.button1, 1 );
+		mButtonIds.put( R.id.button2, 2 );
+		mButtonIds.put( R.id.button3, 3 );
+		mButtonIds.put( R.id.button4, 4 );
+		mButtonIds.put( R.id.button5, 5 );
+		mButtonIds.put( R.id.button6, 6 );
+		mButtonIds.put( R.id.button7, 7 );
+		mButtonIds.put( R.id.button8, 8 );
+		mButtonIds.put( R.id.button9, 9 );
 		
 		setListeners();
 	}
@@ -166,6 +189,32 @@ public class SetupIntro extends Activity implements View.OnClickListener
 					} );
 					
 					setListeners();
+					
+					AlertDialog.Builder builder = new AlertDialog.Builder( this );
+					LayoutInflater inflater = getLayoutInflater();
+					
+					builder.setView( inflater.inflate(  R.layout.popup_select_number, null ) );
+					
+					Dialog dlg = builder.create();
+					dlg.setCancelable( false );
+					dlg.show();
+					
+					mDialog = dlg;
+					
+					// there must be a better way to do this. I don't think R
+					// IDs are guaranteed to stay in order though, so a loop
+					// wouldn't really cut it.
+
+					( ( Button ) dlg.findViewById( R.id.button0 ) ).setOnClickListener( this );
+					( ( Button ) dlg.findViewById( R.id.button1 ) ).setOnClickListener( this );
+					( ( Button ) dlg.findViewById( R.id.button2 ) ).setOnClickListener( this );
+					( ( Button ) dlg.findViewById( R.id.button3 ) ).setOnClickListener( this );
+					( ( Button ) dlg.findViewById( R.id.button4 ) ).setOnClickListener( this );
+					( ( Button ) dlg.findViewById( R.id.button5 ) ).setOnClickListener( this );
+					( ( Button ) dlg.findViewById( R.id.button6 ) ).setOnClickListener( this );
+					( ( Button ) dlg.findViewById( R.id.button7 ) ).setOnClickListener( this );
+					( ( Button ) dlg.findViewById( R.id.button8 ) ).setOnClickListener( this );
+					( ( Button ) dlg.findViewById( R.id.button9 ) ).setOnClickListener( this );
 				}
 				
 				return;
@@ -190,6 +239,15 @@ public class SetupIntro extends Activity implements View.OnClickListener
 			{
 				
 			}
+		}
+		else if ( mButtonIds.indexOfKey( which.getId() ) > -1 )
+		{
+			mDialog.dismiss();
+			mChosenNumber = mButtonIds.get( which.getId() );
+			Log.d( "PicturePassword", "Chosen number is " + mChosenNumber );
+			
+			final PicturePasswordView imageview = ( PicturePasswordView ) findViewById( R.id.chosenImage );
+			imageview.setShowNumbers( true );
 		}
 	}
 }
