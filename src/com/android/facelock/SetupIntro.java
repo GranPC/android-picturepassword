@@ -16,6 +16,8 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ImageView.ScaleType;
+import android.widget.NumberPicker;
+import android.widget.NumberPicker.*;
 
 public class SetupIntro extends Activity implements View.OnClickListener
 {
@@ -93,7 +95,7 @@ public class SetupIntro extends Activity implements View.OnClickListener
 				mStep = STEP_CHOOSE_NUMBER;
 				setContentView( R.layout.activity_setup_number );
 				
-				final ImageView imageview = ( ImageView ) findViewById( R.id.chosenImage );
+				final PicturePasswordView imageview = ( PicturePasswordView ) findViewById( R.id.chosenImage );
 				
 				DisplayMetrics metrics = getResources().getDisplayMetrics();
 				
@@ -129,6 +131,22 @@ public class SetupIntro extends Activity implements View.OnClickListener
 				{
 					imageview.setImageBitmap( image );
 					imageview.setScaleType( ScaleType.CENTER_CROP );
+					
+					imageview.setGridSize( 5 );
+					
+					final NumberPicker gridSize = ( NumberPicker ) findViewById( R.id.grid_size );
+					gridSize.setMinValue( 3 );
+					gridSize.setMaxValue( 10 );
+					gridSize.setValue( imageview.getGridSize() );
+					gridSize.setOnValueChangedListener( new OnValueChangeListener()
+					{
+						@Override
+						
+						public void onValueChange( NumberPicker picker, int old, int newValue )
+						{
+							imageview.setGridSize( newValue );
+						}
+					} );
 					
 					setListeners();
 				}

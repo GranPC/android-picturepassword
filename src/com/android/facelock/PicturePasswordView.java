@@ -19,6 +19,9 @@ public class PicturePasswordView extends ImageView
 	private int mSeed;
 	
 	private final boolean DEBUG = false;
+
+	private static final int DEFAULT_GRID_SIZE = 10;
+	private static final int FONT_SIZE = 20;
 	
 	private float mScrollX = 0;
 	private float mScrollY = 0;
@@ -26,12 +29,11 @@ public class PicturePasswordView extends ImageView
 	private float mFingerX;
 	private float mFingerY;
 	
-	private static final int GRID_SIZE = 10;
-	private static final int FONT_SIZE = 20;
-	
 	private Rect mTextBounds;
 	
 	private Paint mPaint;
+	
+	private int mGridSize;
 	
 	private int getNumberForXY( int x, int y )
 	{
@@ -46,6 +48,8 @@ public class PicturePasswordView extends ImageView
 		
 		Random rnd = new Random();
 		mSeed = rnd.nextInt();
+		
+		mGridSize = DEFAULT_GRID_SIZE;
 		
 		final DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();
 		final float shadowOff = TypedValue.applyDimension( TypedValue.COMPLEX_UNIT_DIP, 2, displayMetrics );
@@ -68,19 +72,19 @@ public class PicturePasswordView extends ImageView
 	{
 		super.onDraw( canvas );
 		
-		final float cellSize = canvas.getWidth() / GRID_SIZE;
+		final float cellSize = canvas.getWidth() / mGridSize;
 		
 		float drawX = -cellSize / 1.5F;
 		
-		for ( int x = -1; x < GRID_SIZE + 1; x++ )
+		for ( int x = -1; x < mGridSize + 1; x++ )
 		{
 			float drawY = -mTextBounds.bottom + cellSize / 1.5F - cellSize;
 			
-			for ( int y = -1; y < GRID_SIZE + 1; y++ )
+			for ( int y = -1; y < mGridSize + 1; y++ )
 			{
 				if ( DEBUG )
 				{
-					if ( x == -1 || y == -1 || x == GRID_SIZE || y == GRID_SIZE )
+					if ( x == -1 || y == -1 || x == mGridSize || y == mGridSize )
 					{
 						mPaint.setColor( Color.RED );
 					}
@@ -109,6 +113,20 @@ public class PicturePasswordView extends ImageView
 		{
 			canvas.drawText( mScrollX / cellSize + "," + mScrollY / cellSize, 0, mTextBounds.bottom * 26.5f, mPaint );
 		}
+	}
+	
+	public void setGridSize( int size )
+	{
+		if ( size > 3 && size < 10 )
+		{
+			mGridSize = size;
+			invalidate();
+		}
+	}
+	
+	public int getGridSize()
+	{
+		return mGridSize;
 	}
 	
 	@Override

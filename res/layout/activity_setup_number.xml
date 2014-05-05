@@ -1,36 +1,58 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-    android:orientation="vertical"
-    android:padding="@dimen/activity_horizontal_margin"
-    android:gravity="center_horizontal">
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="fill_parent"
+	android:layout_height="fill_parent">
+	<LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+       	android:orientation="vertical"
+        android:padding="@dimen/activity_horizontal_margin"
+        android:gravity="center_horizontal">
 
-    <com.android.facelock.PicturePasswordView
-        android:id="@+id/chosenImage"
-        android:layout_width="300dp"
-        android:layout_height="300dp"
-        android:layout_margin="24dp"
-        android:src="@drawable/ic_launcher" />
+        <com.android.facelock.PicturePasswordView
+            android:id="@+id/chosenImage"
+            android:layout_width="270dp"
+            android:layout_height="270dp"
+            android:layout_margin="24dp"
+            android:src="@drawable/ic_launcher" />
+	
+		<LinearLayout
+		 	android:orientation="vertical"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:gravity="center_horizontal">
+
+			<TextView
+				android:text="@string/grid_size"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content" />
+		
+			<NumberPicker
+				android:id="@+id/grid_size"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content" />
+	    </LinearLayout>
+	
+    	<View
+    	    android:layout_width="match_parent"
+    	    android:layout_height="0dip"
+    	    android:layout_weight="1" />
     
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="0dip"
-        android:layout_weight="1" />
-    
-    <LinearLayout
-        style="@style/SecurityPreferenceButtonContainer"
-        android:orientation="horizontal">
+    	<LinearLayout
+    	    style="@style/SecurityPreferenceButtonContainer"
+    	    android:orientation="horizontal">
 
-        <!-- left : cancel -->
-        <Button android:id="@+id/cancel_button"
-            style="@style/SecurityPreferenceButton"
-            android:text="@string/cancel"/>
+    	    <!-- left : cancel -->
+    	    <Button android:id="@+id/cancel_button"
+    	        style="@style/SecurityPreferenceButton"
+       	     android:text="@string/cancel"/>
 
-        <!-- right : continue -->
-        <Button android:id="@+id/next_button"
-            style="@style/SecurityPreferenceButton"
-            android:text="@string/next"/>
+       		<!-- right : continue -->
+	        <Button android:id="@+id/next_button"
+	            style="@style/SecurityPreferenceButton"
+	            android:text="@string/next"/>
 
-    </LinearLayout>
+ 	   </LinearLayout>
 
-</LinearLayout>
+	</LinearLayout>
+
+</ScrollView>

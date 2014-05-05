@@ -7,5 +7,7 @@
     <string name="requirements">To set up this feature, you choose the:\n• Picture\n• Number\n• Part of the picture to drag the number to</string>
     <string name="cancel">Cancel</string>
     <string name="next">Continue</string>
+	
+	<string name="grid_size">Grid size</string>
 
 </resources>
