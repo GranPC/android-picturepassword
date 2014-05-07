@@ -189,7 +189,7 @@ public class PicturePasswordView extends ImageView
 	
 		mPaint.setAlpha( ( int ) ( mScale * ( mHighlight ? 64 : 255 ) ) );
 
-		final float cellSize = ( canvas.getWidth() / mGridSize ) * ( mScale * 0.4f + 0.6f );
+		final float cellSize = ( canvas.getWidth() / ( float ) mGridSize ) * ( mScale * 0.4f + 0.6f );
 		
 		final float xOffset = ( 1.0f - ( mScale * 0.4f + 0.6f ) ) * canvas.getWidth() / 2;
 		final float yOffset = ( 1.0f - ( mScale * 0.4f + 0.6f ) ) * canvas.getWidth() / 2;
@@ -214,16 +214,15 @@ public class PicturePasswordView extends ImageView
 					}
 				}
 				
-				int cellX = ( int ) ( x - mScrollX / cellSize );
-				int cellY = ( int ) ( y - mScrollY / cellSize );
+				int cellX = ( int ) ( x - Math.floor( mScrollX / cellSize ) );
+				int cellY = ( int ) ( y - Math.floor( mScrollY / cellSize ) );
 				
-				if ( mScrollX / cellSize <= 0 && cellX != 0 ) cellX--;
-				if ( mScrollY / cellSize <= 0 && cellY != 0 ) cellY--;
+				if ( mScrollX / cellSize <= 0 && cellX != 0 && mScrollX != 0 ) cellX--;
+				if ( mScrollY / cellSize <= 0 && cellY != 0 && mScrollY != 0 ) cellY--;
 				
 				if ( mHighlight && mHighlightX == cellX && mHighlightY == cellY )
 				{
 					mPaint.setAlpha( ( int ) mScale * 255 );
-					Log.d( "PicturePassword", "Spotted number at " + cellX + "," + cellY );
 				}
 
 				Integer number = getNumberForXY( cellX, cellY );
