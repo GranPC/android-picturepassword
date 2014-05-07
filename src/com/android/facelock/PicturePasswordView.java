@@ -2,6 +2,7 @@ package com.android.facelock;
 
 import java.util.Random;
 
+import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
@@ -37,6 +38,9 @@ public class PicturePasswordView extends ImageView
 	
 	private boolean mShowNumbers;
 	
+	private float mScale;
+	private ObjectAnimator mAnimator;
+	
 	private int getNumberForXY( int x, int y )
 	{
 		// TODO: still sucks
@@ -71,6 +75,13 @@ public class PicturePasswordView extends ImageView
 		TypedArray a = context.getTheme().obtainStyledAttributes( attrs, R.styleable.PicturePasswordView, 0, 0 );
 
 		mShowNumbers = true;
+		mScale = 1.0f;
+		
+		mAnimator = new ObjectAnimator();
+		mAnimator.setTarget( this );
+		mAnimator.setFloatValues( 0, 1 );
+		mAnimator.setPropertyName( "scale" );
+		mAnimator.setDuration( 200 );
 		
 		try
 		{
@@ -89,7 +100,38 @@ public class PicturePasswordView extends ImageView
 	
 	public void setShowNumbers( boolean show )
 	{
+		setShowNumbers( show, false );
+		
+		invalidate();
+	}
+	
+	public void setScale( float scale )
+	{
+		if ( mScale != scale )
+		{
+			mScale = scale;
+			invalidate();
+		}
+	}
+	
+	public float getScale()
+	{
+		return mScale;
+	}
+	
+	public void setShowNumbers( boolean show, boolean animate )
+	{
 		mShowNumbers = show;
+		
+		if ( animate )
+		{
+			mAnimator.start();
+		}
+		else
+		{
+			mScale = show ? 1.0f : 0.0f;			
+		}
+		
 		invalidate();
 	}
 
@@ -100,13 +142,18 @@ public class PicturePasswordView extends ImageView
 		
 		if ( !mShowNumbers ) return;
 		
-		final float cellSize = canvas.getWidth() / mGridSize;
+		mPaint.setAlpha( ( int ) ( mScale * 255 ) );
+
+		final float cellSize = ( canvas.getWidth() / mGridSize ) * ( mScale * 0.4f + 0.6f );
 		
-		float drawX = -cellSize / 1.5F;
+		final float xOffset = ( 1.0f - ( mScale * 0.4f + 0.6f ) ) * canvas.getWidth() / 2;
+		final float yOffset = ( 1.0f - ( mScale * 0.4f + 0.6f ) ) * canvas.getWidth() / 2;
+		
+		float drawX = -cellSize / 1.5F + xOffset;
 		
 		for ( int x = -1; x < mGridSize + 1; x++ )
 		{
-			float drawY = -mTextBounds.bottom + cellSize / 1.5F - cellSize;
+			float drawY = -mTextBounds.bottom + cellSize / 1.5F - cellSize + yOffset;
 			
 			for ( int y = -1; y < mGridSize + 1; y++ )
 			{

@@ -238,10 +238,9 @@ public class SetupIntro extends Activity implements View.OnClickListener
 		{
 			mDialog.dismiss();
 			mChosenNumber = mButtonIds.get( which.getId() );
-			Log.d( "PicturePassword", "Chosen number is " + mChosenNumber );
 			
 			final PicturePasswordView imageview = ( PicturePasswordView ) findViewById( R.id.chosenImage );
-			imageview.setShowNumbers( true );
+			imageview.setShowNumbers( true, true );
 		}
 	}
 }
