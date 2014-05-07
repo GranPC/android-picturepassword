@@ -1,4 +1,4 @@
-<resources>
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
 
     <!--
         Base application theme for API 14+. This theme completely replaces
@@ -22,6 +22,12 @@
         <item name="android:layout_height">wrap_content</item>
         <item name="android:ellipsize">marquee</item>
         <item name="android:singleLine">true</item>
+    </style>
+    
+    <style name="NumberButton" parent="@android:style/Widget.Holo.Button.Borderless">
+        <item name="android:singleLine">true</item>
+        <item name="android:background">?android:attr/selectableItemBackground</item>
+        <item name="android:textSize">34dp</item>
     </style>
 
 </resources>

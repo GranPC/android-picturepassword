@@ -24,7 +24,8 @@
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
             android:layout_alignParentTop="true"
-            android:text="1" />
+            android:text="1"
+            style="@style/NumberButton" />
 
         <Button
             android:id="@+id/button2"
@@ -32,7 +33,8 @@
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
             android:layout_toRightOf="@+id/button1"
-            android:text="2" />
+            android:text="2"
+            style="@style/NumberButton" />
         
         <Button
             android:id="@+id/button3"
@@ -40,7 +42,8 @@
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
             android:layout_toRightOf="@+id/button2"
-            android:text="3" />
+            android:text="3"
+            style="@style/NumberButton" />
         
         <Button
             android:id="@+id/button4"
@@ -48,7 +51,8 @@
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
             android:layout_below="@+id/button1"
-            android:text="4" />
+            android:text="4"
+            style="@style/NumberButton" />
 
         <Button
             android:id="@+id/button5"
@@ -56,7 +60,8 @@
             android:layout_height="wrap_content"
             android:layout_alignTop="@+id/button4"
             android:layout_toRightOf="@+id/button4"
-            android:text="5" />
+            android:text="5"
+            style="@style/NumberButton" />
         
         <Button
             android:id="@+id/button6"
@@ -64,7 +69,8 @@
             android:layout_height="wrap_content"
             android:layout_alignTop="@+id/button5"
             android:layout_toRightOf="@+id/button5"
-            android:text="6" />
+            android:text="6"
+            style="@style/NumberButton" />
         
         <Button
             android:id="@+id/button7"
@@ -72,7 +78,8 @@
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
             android:layout_below="@+id/button4"
-            android:text="7" />
+            android:text="7"
+            style="@style/NumberButton" />
 
         <Button
             android:id="@+id/button8"
@@ -80,7 +87,8 @@
             android:layout_height="wrap_content"
             android:layout_alignTop="@+id/button7"
             android:layout_toRightOf="@+id/button7"
-            android:text="8" />
+            android:text="8"
+            style="@style/NumberButton" />
         
         <Button
             android:id="@+id/button9"
@@ -88,7 +96,8 @@
             android:layout_height="wrap_content"
             android:layout_alignTop="@+id/button8"
             android:layout_toRightOf="@+id/button8"
-            android:text="9" />
+            android:text="9"
+            style="@style/NumberButton" />
         
         <Button
             android:id="@+id/button0"
@@ -96,7 +105,8 @@
             android:layout_height="wrap_content"
             android:layout_alignLeft="@+id/button8"
             android:layout_below="@+id/button8"
-            android:text="0" />
+            android:text="0"
+            style="@style/NumberButton" />
         
     </RelativeLayout>
 
