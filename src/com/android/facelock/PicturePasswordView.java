@@ -187,7 +187,7 @@ public class PicturePasswordView extends ImageView
 		
 		if ( !mShowNumbers ) return;
 	
-		mPaint.setAlpha( ( int ) ( mScale * ( mHighlight ? 64 : 255 ) ) );
+		mPaint.setAlpha( ( int ) ( mScale * ( float ) ( mHighlight ? 64 : 255 ) ) );
 
 		final float cellSize = ( canvas.getWidth() / ( float ) mGridSize ) * ( mScale * 0.4f + 0.6f );
 		
@@ -222,7 +222,7 @@ public class PicturePasswordView extends ImageView
 				
 				if ( mHighlight && mHighlightX == cellX && mHighlightY == cellY )
 				{
-					mPaint.setAlpha( ( int ) mScale * 255 );
+					mPaint.setAlpha( ( int ) ( mScale * 255 ) );
 				}
 
 				Integer number = getNumberForXY( cellX, cellY );
@@ -231,7 +231,7 @@ public class PicturePasswordView extends ImageView
 				
 				if ( mHighlight && mHighlightX == cellX && mHighlightY == cellY )
 				{
-					mPaint.setAlpha( ( int ) mScale * 64 );
+					mPaint.setAlpha( ( int ) ( mScale * 64 ) );
 				}
 
 				drawY += cellSize;
