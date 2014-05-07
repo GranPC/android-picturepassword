@@ -11,6 +11,7 @@ import android.graphics.Paint;
 import android.graphics.Rect;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.MotionEvent;
 import android.widget.ImageView;
@@ -41,6 +42,12 @@ public class PicturePasswordView extends ImageView
 	private float mScale;
 	private ObjectAnimator mAnimator;
 	
+	private Random mRandom;
+	
+	private boolean mHighlight = false;
+	private int mHighlightX;
+	private int mHighlightY;
+	
 	private int getNumberForXY( int x, int y )
 	{
 		// TODO: still sucks
@@ -52,8 +59,8 @@ public class PicturePasswordView extends ImageView
 	{
 		super( context, attrs );
 		
-		Random rnd = new Random();
-		mSeed = rnd.nextInt();
+		mRandom = new Random();
+		mSeed = mRandom.nextInt();
 		
 		mGridSize = DEFAULT_GRID_SIZE;
 		
@@ -134,6 +141,44 @@ public class PicturePasswordView extends ImageView
 		
 		invalidate();
 	}
+	
+	public void setFocusNumber( int number )
+	{
+		if ( number >= 0 && number <= 9 )
+		{
+			mHighlight = true;
+			
+			boolean found = false;
+			
+			mScrollX = mScrollY = 0;
+			
+			while ( !found )
+			{
+				for ( int x = 0; x < mGridSize; x++ )
+				{
+					for ( int y = 0; y < mGridSize; y++ )
+					{
+						if ( getNumberForXY( x, y ) == number )
+						{
+							mHighlightX = x;
+							mHighlightY = y;
+							found = true;
+							break;
+						}
+					}
+				}
+				
+				if ( !found )
+				{
+					mSeed = mRandom.nextInt();
+				}
+			}
+		}
+		else
+		{
+			mHighlight = false;
+		}
+	}
 
 	@Override
 	protected void onDraw( Canvas canvas )
@@ -141,8 +186,8 @@ public class PicturePasswordView extends ImageView
 		super.onDraw( canvas );
 		
 		if ( !mShowNumbers ) return;
-		
-		mPaint.setAlpha( ( int ) ( mScale * 255 ) );
+	
+		mPaint.setAlpha( ( int ) ( mScale * ( mHighlight ? 64 : 255 ) ) );
 
 		final float cellSize = ( canvas.getWidth() / mGridSize ) * ( mScale * 0.4f + 0.6f );
 		
@@ -174,10 +219,22 @@ public class PicturePasswordView extends ImageView
 				
 				if ( mScrollX / cellSize <= 0 && cellX != 0 ) cellX--;
 				if ( mScrollY / cellSize <= 0 && cellY != 0 ) cellY--;
-			
+				
+				if ( mHighlight && mHighlightX == cellX && mHighlightY == cellY )
+				{
+					mPaint.setAlpha( ( int ) mScale * 255 );
+					Log.d( "PicturePassword", "Spotted number at " + cellX + "," + cellY );
+				}
+
 				Integer number = getNumberForXY( cellX, cellY );
 				
 				canvas.drawText( number.toString(), drawX + mScrollX % cellSize, drawY + mScrollY % cellSize, mPaint );
+				
+				if ( mHighlight && mHighlightX == cellX && mHighlightY == cellY )
+				{
+					mPaint.setAlpha( ( int ) mScale * 64 );
+				}
+
 				drawY += cellSize;
 			}
 			

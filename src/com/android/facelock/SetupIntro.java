@@ -1,7 +1,6 @@
 package com.android.facelock;
 
 import java.io.FileDescriptor;
-import java.util.Map;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -13,7 +12,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.ParcelFileDescriptor;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.util.SparseIntArray;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
@@ -240,6 +238,7 @@ public class SetupIntro extends Activity implements View.OnClickListener
 			mChosenNumber = mButtonIds.get( which.getId() );
 			
 			final PicturePasswordView imageview = ( PicturePasswordView ) findViewById( R.id.chosenImage );
+			imageview.setFocusNumber( mChosenNumber );
 			imageview.setShowNumbers( true, true );
 		}
 	}
