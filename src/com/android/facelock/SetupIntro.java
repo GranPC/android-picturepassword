@@ -47,6 +47,10 @@ public class SetupIntro extends Activity implements View.OnClickListener
 		
 		mButtonIds = new SparseIntArray();
 		
+		// there must be a better way to do this. I don't think R
+		// IDs are guaranteed to stay in order though, so a loop
+		// wouldn't really cut it.
+
 		mButtonIds.put( R.id.button0, 0 );
 		mButtonIds.put( R.id.button1, 1 );
 		mButtonIds.put( R.id.button2, 2 );
@@ -193,7 +197,7 @@ public class SetupIntro extends Activity implements View.OnClickListener
 					AlertDialog.Builder builder = new AlertDialog.Builder( this );
 					LayoutInflater inflater = getLayoutInflater();
 					
-					builder.setView( inflater.inflate(  R.layout.popup_select_number, null ) );
+					builder.setView( inflater.inflate( R.layout.popup_select_number, null ) );
 					
 					Dialog dlg = builder.create();
 					dlg.setCancelable( false );
@@ -201,20 +205,10 @@ public class SetupIntro extends Activity implements View.OnClickListener
 					
 					mDialog = dlg;
 					
-					// there must be a better way to do this. I don't think R
-					// IDs are guaranteed to stay in order though, so a loop
-					// wouldn't really cut it.
-
-					( ( Button ) dlg.findViewById( R.id.button0 ) ).setOnClickListener( this );
-					( ( Button ) dlg.findViewById( R.id.button1 ) ).setOnClickListener( this );
-					( ( Button ) dlg.findViewById( R.id.button2 ) ).setOnClickListener( this );
-					( ( Button ) dlg.findViewById( R.id.button3 ) ).setOnClickListener( this );
-					( ( Button ) dlg.findViewById( R.id.button4 ) ).setOnClickListener( this );
-					( ( Button ) dlg.findViewById( R.id.button5 ) ).setOnClickListener( this );
-					( ( Button ) dlg.findViewById( R.id.button6 ) ).setOnClickListener( this );
-					( ( Button ) dlg.findViewById( R.id.button7 ) ).setOnClickListener( this );
-					( ( Button ) dlg.findViewById( R.id.button8 ) ).setOnClickListener( this );
-					( ( Button ) dlg.findViewById( R.id.button9 ) ).setOnClickListener( this );
+					for ( int i = 0; i < 10; i++ )
+					{
+						( ( Button ) dlg.findViewById( mButtonIds.keyAt( mButtonIds.indexOfValue( i ) ) ) ).setOnClickListener( this );
+					}
 				}
 				
 				return;
