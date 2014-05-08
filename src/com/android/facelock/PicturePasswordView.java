@@ -34,6 +34,7 @@ public class PicturePasswordView extends ImageView
 	private Rect mTextBounds;
 	
 	private Paint mPaint;
+	private Paint mCirclePaint;
 	
 	private int mGridSize;
 	
@@ -75,9 +76,23 @@ public class PicturePasswordView extends ImageView
 		mPaint.setTextSize( TypedValue.applyDimension( TypedValue.COMPLEX_UNIT_DIP, FONT_SIZE, displayMetrics ) );
 		
 		mPaint.setAntiAlias( true );
+
+
+		mCirclePaint = new Paint( Paint.ANTI_ALIAS_FLAG );
+
+		mCirclePaint.setColor( Color.argb( 255, 0x33, 0xb5, 0xe5 ) );
+		
+		mCirclePaint.setStyle( Paint.Style.STROKE );
+		mCirclePaint.setStrokeWidth( 5 );
+		
+		/* mCirclePaint.setShadowLayer( 5, 0, 0, Color.WHITE );
+		
+		setLayerType( LAYER_TYPE_SOFTWARE, mCirclePaint ); */ // this feels too laggy
+
 		
 		mTextBounds = new Rect();
 		mPaint.getTextBounds( "8", 0, 1, mTextBounds );
+
 		
 		TypedArray a = context.getTheme().obtainStyledAttributes( attrs, R.styleable.PicturePasswordView, 0, 0 );
 
@@ -223,6 +238,9 @@ public class PicturePasswordView extends ImageView
 				if ( mHighlight && mHighlightX == cellX && mHighlightY == cellY )
 				{
 					mPaint.setAlpha( ( int ) ( mScale * 255 ) );
+					canvas.drawCircle( drawX + mScrollX % cellSize + mTextBounds.right / 2,
+							drawY + mScrollY % cellSize + mTextBounds.top / 2,
+							mPaint.getTextSize() / 1.5f, mCirclePaint );
 				}
 
 				Integer number = getNumberForXY( cellX, cellY );
