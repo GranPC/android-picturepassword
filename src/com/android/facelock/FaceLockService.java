@@ -1,15 +1,11 @@
 package com.android.facelock;
 
 import android.app.Service;
-
 import android.content.Intent;
-import android.opengl.Visibility;
-import android.os.Binder;
 import android.os.Handler;
 import android.os.Handler.Callback;
 import android.os.IBinder;
 import android.os.Message;
-import android.os.Messenger;
 import android.os.RemoteException;
 import android.util.Log;
 import android.view.View;
@@ -51,6 +47,7 @@ public class FaceLockService extends Service implements Callback
 				p.y = y;
 				p.width = w;
 				p.height = h;
+				p.gravity = 8388659; // TODO: decompose, i have no idea what this means
 				
 				FaceLockService.this.mLayoutParams = p;
 				FaceLockService.this.mHandler.obtainMessage( MSG_SERVICE_CONNECTED, p ).sendToTarget();
@@ -92,6 +89,7 @@ public class FaceLockService extends Service implements Callback
 		final PicturePasswordView picturePassword = ( PicturePasswordView ) mView.findViewById( R.id.picture_password );
 		picturePassword.setImageBitmap( prefs.image );
 		picturePassword.setUnlockNumber( prefs.unlockNumber, prefs.unlockNumberX, prefs.unlockNumberY );
+		picturePassword.setGridSize( prefs.gridSize );
 		picturePassword.setOnFingerUpListener( new OnFingerUpListener()
 		{
 			@Override
@@ -135,6 +133,11 @@ public class FaceLockService extends Service implements Callback
 			case MSG_SERVICE_CONNECTED:
 				mView.setVisibility( View.VISIBLE );
 				mWindowManager.addView( mView, ( LayoutParams ) msg.obj );
+				return true;
+				
+			case MSG_SERVICE_DISCONNECTED:
+				mView.setVisibility( View.INVISIBLE );
+				mWindowManager.removeView( mView );
 				return true;
 		}
 		return false;
