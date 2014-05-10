@@ -15,6 +15,7 @@ import android.util.DisplayMetrics;
 import android.util.TypedValue;
 import android.view.MotionEvent;
 import android.widget.ImageView;
+import android.widget.ImageView.ScaleType;
 
 public class PicturePasswordView extends ImageView
 {
@@ -77,6 +78,8 @@ public class PicturePasswordView extends ImageView
 	public PicturePasswordView( Context context, AttributeSet attrs )
 	{
 		super( context, attrs );
+		
+		setScaleType( ScaleType.CENTER_CROP );
 		
 		mRandom = new Random();
 		mSeed = mRandom.nextInt();

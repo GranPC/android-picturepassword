@@ -164,7 +164,6 @@ public class SetupIntro extends Activity implements View.OnClickListener
 					mBitmap = image;
 					
 					imageview.setImageBitmap( image );
-					imageview.setScaleType( ScaleType.CENTER_CROP );
 					
 					imageview.setGridSize( 5 );
 					
