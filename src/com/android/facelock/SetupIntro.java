@@ -282,6 +282,7 @@ public class SetupIntro extends Activity implements View.OnClickListener
 			chooseIntent.setClassName( "com.android.settings", "com.android.settings.ChooseLockGeneric" );
 			chooseIntent.putExtra( "lockscreen.biometric_weak_fallback", true );
 			startActivity( chooseIntent );
+			finish();
 		}
 	}
 	
