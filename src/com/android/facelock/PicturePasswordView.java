@@ -12,6 +12,7 @@ import android.graphics.PointF;
 import android.graphics.Rect;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.MotionEvent;
 import android.widget.ImageView;
@@ -67,6 +68,8 @@ public class PicturePasswordView extends ImageView
 	private boolean mShouldUnlock = false;
 	
 	private boolean mHighlightUnlockNumber = false;
+	
+	private boolean mResetting = false;
 	
 	private int getNumberForXY( int x, int y )
 	{
@@ -143,11 +146,13 @@ public class PicturePasswordView extends ImageView
 	
 	public void reset()
 	{
-		mSeed = mRandom.nextInt();
-		mScrollX = 0;
-		mScrollY = 0;
+		mResetting = true;
 		
-		invalidate();
+		mAnimator.setDuration( 400 );
+		mAnimator.setFloatValues( 1, 0, 0, 1 );
+		mAnimator.start();
+		
+		setEnabled( false );
 	}
 	
 	public void setShowNumbers( boolean show )
@@ -158,11 +163,29 @@ public class PicturePasswordView extends ImageView
 	}
 	
 	public void setScale( float scale )
-	{
+	{		
 		if ( mScale != scale )
 		{
 			mScale = scale;
 			invalidate();
+			
+			if ( mResetting && ( scale == 0 || scale == 1 ) )
+			{
+				if ( scale == 0 )
+				{
+					mSeed = mRandom.nextInt();
+					mScrollX = 0;
+					mScrollY = 0;
+				}
+				else
+				{
+					mAnimator.setFloatValues( 0, 1 );
+					mAnimator.setDuration( 200 );
+					
+					mResetting = false;
+					setEnabled( true );
+				}
+			}
 		}
 	}
 	
@@ -173,14 +196,19 @@ public class PicturePasswordView extends ImageView
 	
 	public void setShowNumbers( boolean show, boolean animate )
 	{
-		mShowNumbers = show;
-		
 		if ( animate )
 		{
-			mAnimator.start();
+			mShowNumbers = true;
+
+			if ( show )
+				mAnimator.start();
+			else
+				mAnimator.reverse();
 		}
 		else
 		{
+			mShowNumbers = show;
+			
 			mScale = show ? 1.0f : 0.0f;			
 		}
 		
