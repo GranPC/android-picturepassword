@@ -38,6 +38,9 @@ public class PicturePasswordView extends ImageView
 	private float mFingerX;
 	private float mFingerY;
 	
+	private float mFingerStartX = 0;
+	private float mFingerStartY = 0;
+	
 	private Rect mTextBounds;
 	
 	private Paint mPaint;
@@ -398,6 +401,9 @@ public class PicturePasswordView extends ImageView
 			case MotionEvent.ACTION_DOWN:
 				mFingerX = x;
 				mFingerY = y;
+				
+				mFingerStartX = x;
+				mFingerStartY = y;
 				break;
 				
 			case MotionEvent.ACTION_MOVE:
@@ -416,7 +422,13 @@ public class PicturePasswordView extends ImageView
 			case MotionEvent.ACTION_UP:
 				if ( mListener != null )
 				{
-					mListener.onFingerUp( this, mShouldUnlock );
+					float dx = mFingerStartX / getWidth() - x / getWidth();
+					float dy = mFingerStartY / getWidth() - y / getWidth();
+					
+					if ( PointF.length( dx, dy ) > 0.1f )
+					{
+						mListener.onFingerUp( this, mShouldUnlock );
+					}
 				}
 		}
 
