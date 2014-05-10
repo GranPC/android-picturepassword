@@ -231,6 +231,9 @@ public class SetupIntro extends Activity implements View.OnClickListener
 		final Button nextButton = ( Button ) findViewById( R.id.next_button );
 		nextButton.setEnabled( false );
 		
+		final SeekBar gridSize = ( SeekBar ) findViewById( R.id.grid_size );
+		gridSize.setEnabled( false );
+		
 		PicturePasswordView passwordView = ( PicturePasswordView ) findViewById( R.id.chosenImage );
 				
 		int unlockNumber = mChosenNumber;
