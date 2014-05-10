@@ -14,7 +14,7 @@ import android.graphics.PointF;
 
 public class PicturePasswordUtils
 {
-	public class Preferences
+	public static class Preferences
 	{
 		Bitmap image;
 		int unlockNumber;
