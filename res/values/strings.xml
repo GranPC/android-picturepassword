@@ -18,6 +18,7 @@
     <string name="done">You\'re done!</string>
 	
 	<string name="grid_size">Grid size: </string>
+	<string name="randomize">Randomize</string>
 
 	<string name="service_name">Picture Password Service</string>
 </resources>

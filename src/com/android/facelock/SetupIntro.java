@@ -20,6 +20,7 @@ import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.ImageView.ScaleType;
 import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
@@ -42,6 +43,7 @@ public class SetupIntro extends Activity implements View.OnClickListener
 	private Bitmap mBitmap;
 	private PointF mUnlockPosition;
 	private int mGridSize;
+	private boolean mRandomize;
 
 	@Override
 	protected void onCreate( Bundle savedInstanceState )
@@ -235,8 +237,12 @@ public class SetupIntro extends Activity implements View.OnClickListener
 		final SeekBar gridSize = ( SeekBar ) findViewById( R.id.grid_size );
 		gridSize.setEnabled( false );
 		
+		final CheckBox randomize = ( CheckBox ) findViewById( R.id.randomize );
+		randomize.setEnabled( false );
+		
 		PicturePasswordView passwordView = ( PicturePasswordView ) findViewById( R.id.chosenImage );
 		mGridSize = passwordView.getGridSize();
+		mRandomize = randomize.isChecked();
 				
 		int unlockNumber = mChosenNumber;
 		PointF unlockPosition = passwordView.getHighlightPosition();
@@ -270,7 +276,7 @@ public class SetupIntro extends Activity implements View.OnClickListener
 	
 	private void saveData()
 	{
-		if ( !PicturePasswordUtils.saveUnlockData( this, mBitmap, mGridSize, mChosenNumber, mUnlockPosition ) )
+		if ( !PicturePasswordUtils.saveUnlockData( this, mBitmap, mGridSize, mRandomize, mChosenNumber, mUnlockPosition ) )
 		{
 			// uh oh
 			finish();

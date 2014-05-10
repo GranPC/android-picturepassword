@@ -47,6 +47,7 @@ public class PicturePasswordView extends ImageView
 	private Paint mCirclePaint;
 	
 	private int mGridSize;
+	private int mActualSize;
 	
 	private boolean mShowNumbers;
 	
@@ -73,6 +74,8 @@ public class PicturePasswordView extends ImageView
 	private boolean mHighlightUnlockNumber = false;
 	
 	private boolean mResetting = false;
+	
+	private boolean mRandomGridSize = false;
 	
 	private int getNumberForXY( int x, int y )
 	{
@@ -179,6 +182,11 @@ public class PicturePasswordView extends ImageView
 					mSeed = mRandom.nextInt();
 					mScrollX = 0;
 					mScrollY = 0;
+					
+					if ( mRandomGridSize )
+					{
+						setGridSize( mActualSize );
+					}
 				}
 				else
 				{
@@ -272,9 +280,21 @@ public class PicturePasswordView extends ImageView
 	{
 		if ( size > 3 && size <= 8 )
 		{
-			mGridSize = size;
+			mGridSize = mActualSize = size;
+			
+			if ( mRandomGridSize )
+			{
+				mGridSize = mActualSize + mRandom.nextInt( 3 ) - 1;
+			}
+			
 			invalidate();
 		}
+	}
+	
+	public void setRandomize( boolean randomize )
+	{
+		mRandomGridSize = randomize;
+		setGridSize( mActualSize );
 	}
 	
 	public int getGridSize()

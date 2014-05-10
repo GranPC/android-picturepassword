@@ -89,7 +89,9 @@ public class FaceLockService extends Service implements Callback
 		final PicturePasswordView picturePassword = ( PicturePasswordView ) mView.findViewById( R.id.picture_password );
 		picturePassword.setImageBitmap( prefs.image );
 		picturePassword.setUnlockNumber( prefs.unlockNumber, prefs.unlockNumberX, prefs.unlockNumberY );
+		picturePassword.setRandomize( prefs.randomize );
 		picturePassword.setGridSize( prefs.gridSize );
+		
 		picturePassword.setOnFingerUpListener( new OnFingerUpListener()
 		{
 			@Override
