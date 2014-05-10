@@ -41,6 +41,7 @@ public class SetupIntro extends Activity implements View.OnClickListener
 	
 	private Bitmap mBitmap;
 	private PointF mUnlockPosition;
+	private int mGridSize;
 
 	@Override
 	protected void onCreate( Bundle savedInstanceState )
@@ -236,6 +237,7 @@ public class SetupIntro extends Activity implements View.OnClickListener
 		gridSize.setEnabled( false );
 		
 		PicturePasswordView passwordView = ( PicturePasswordView ) findViewById( R.id.chosenImage );
+		mGridSize = passwordView.getGridSize();
 				
 		int unlockNumber = mChosenNumber;
 		PointF unlockPosition = passwordView.getHighlightPosition();
@@ -269,7 +271,7 @@ public class SetupIntro extends Activity implements View.OnClickListener
 	
 	private void saveData()
 	{
-		if ( !PicturePasswordUtils.saveUnlockData( this, mBitmap, mChosenNumber, mUnlockPosition ) )
+		if ( !PicturePasswordUtils.saveUnlockData( this, mBitmap, mGridSize, mChosenNumber, mUnlockPosition ) )
 		{
 			// uh oh
 			finish();

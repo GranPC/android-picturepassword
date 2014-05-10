@@ -20,9 +20,11 @@ public class PicturePasswordUtils
 		int unlockNumber;
 		float unlockNumberX;
 		float unlockNumberY;
+		
+		int gridSize;
 	}
 	
-	public static boolean saveUnlockData( Context context, Bitmap bitmap, int chosenNumber, PointF unlockPosition )
+	public static boolean saveUnlockData( Context context, Bitmap bitmap, int gridSize, int chosenNumber, PointF unlockPosition )
 	{
 		File bitmapFile = new File( context.getFilesDir(), "image" );
 		FileOutputStream bitmapStream;
@@ -56,6 +58,8 @@ public class PicturePasswordUtils
 		prefs.putFloat( "numberx", unlockPosition.x );
 		prefs.putFloat( "numbery", unlockPosition.y );
 		
+		prefs.putInt( "gridsize", gridSize );
+		
 		prefs.commit();
 		
 		return true;
@@ -82,6 +86,8 @@ public class PicturePasswordUtils
 		prefs.unlockNumber = sharedPrefs.getInt( "number", 0 );
 		prefs.unlockNumberX = sharedPrefs.getFloat( "numberx", 0 );
 		prefs.unlockNumberY = sharedPrefs.getFloat( "numbery", 0 );
+		
+		prefs.gridSize = sharedPrefs.getInt( "gridsize", 0 );
 		
 		return true;
 	}
