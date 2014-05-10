@@ -40,6 +40,7 @@ public class SetupIntro extends Activity implements View.OnClickListener
 	private int mChosenNumber;
 	
 	private Bitmap mBitmap;
+	private PointF mUnlockPosition;
 
 	@Override
 	protected void onCreate( Bundle savedInstanceState )
@@ -238,6 +239,7 @@ public class SetupIntro extends Activity implements View.OnClickListener
 				
 		int unlockNumber = mChosenNumber;
 		PointF unlockPosition = passwordView.getHighlightPosition();
+		mUnlockPosition = unlockPosition;
 		
 		passwordView.setFocusNumber( -1 );
 		passwordView.reset();
@@ -265,6 +267,22 @@ public class SetupIntro extends Activity implements View.OnClickListener
 		mStep = STEP_CONFIRM_NUMBER;
 	}
 	
+	private void saveData()
+	{
+		if ( !PicturePasswordUtils.saveUnlockData( this, mBitmap, mChosenNumber, mUnlockPosition ) )
+		{
+			// uh oh
+			finish();
+		}
+		else
+		{
+			Intent chooseIntent = new Intent();
+			chooseIntent.setClassName( "com.android.settings", "com.android.settings.ChooseLockGeneric" );
+			chooseIntent.putExtra( "lockscreen.biometric_weak_fallback", true );
+			startActivity( chooseIntent );
+		}
+	}
+	
 	public void onClick( View which )
 	{
 		if ( which.getId() == R.id.cancel_button )
@@ -280,6 +298,10 @@ public class SetupIntro extends Activity implements View.OnClickListener
 			else if ( mStep == STEP_CHOOSE_NUMBER )
 			{
 				confirmNumber();
+			}
+			else if ( mStep == STEP_CONFIRM_NUMBER )
+			{
+				saveData();
 			}
 		}
 		else if ( mButtonIds.indexOfKey( which.getId() ) > -1 )
