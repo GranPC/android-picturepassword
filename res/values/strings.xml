@@ -19,4 +19,5 @@
 	
 	<string name="grid_size">Grid size: </string>
 
+	<string name="service_name">Picture Password Service</string>
 </resources>

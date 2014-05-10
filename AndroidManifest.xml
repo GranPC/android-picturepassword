@@ -22,10 +22,18 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        
         <activity
             android:name="com.android.facelock.SetupEndScreen"
             android:label="@string/app_name" />
+
+        <service
+            android:name=".FaceLockService"
+            android:label="@string/service_name"
+            android:theme="@*android:style/Theme.NoTitleBar" >
+            <intent-filter>
+                <action android:name="com.android.internal.policy.IFaceLockInterface" />
+            </intent-filter>
+        </service>
     </application>
 
 </manifest>
