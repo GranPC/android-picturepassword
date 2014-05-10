@@ -7,12 +7,15 @@
     <string name="requirements">To set up this feature, you choose the:\n• Picture\n• Number\n• Part of the picture to drag the number to</string>
     <string name="cancel">Cancel</string>
     <string name="next">Continue</string>
+    <string name="ok">OK</string>
     
     <string name="select_prompt">Select a number</string>
     <string name="choose_title">Drag your number to the desired position</string>
     <string name="confirm_title">Drag your number again to confirm</string>
     <string name="try_again">Try again</string>
     <string name="done_title">This is your unlock combination</string>
+    
+    <string name="done">You\'re done!</string>
 	
 	<string name="grid_size">Grid size: </string>
 
