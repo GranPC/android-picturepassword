@@ -327,7 +327,7 @@ public class PicturePasswordView extends ImageView
 				if ( ( mHighlight && mHighlightX == cellX && mHighlightY == cellY ) || shouldHighlight )
 				{
 					mPaint.setAlpha( ( int ) ( mScale * 255 ) );
-					canvas.drawCircle( numX + mTextBounds.right / 2,
+					canvas.drawCircle( numX + ( mTextBounds.right - mTextBounds.left ) / 2,
 							numY + mTextBounds.top / 2,
 							mPaint.getTextSize() / 1.5f, mCirclePaint );
 				}
