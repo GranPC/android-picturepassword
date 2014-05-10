@@ -10,6 +10,9 @@
     
     <string name="select_prompt">Select a number</string>
     <string name="choose_title">Drag your number to the desired position</string>
+    <string name="confirm_title">Drag your number again to confirm</string>
+    <string name="try_again">Try again</string>
+    <string name="done_title">This is your unlock combination</string>
 	
 	<string name="grid_size">Grid size: </string>
 

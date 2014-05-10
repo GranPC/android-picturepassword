@@ -2,12 +2,15 @@ package com.android.facelock;
 
 import java.io.FileDescriptor;
 
+import com.android.facelock.PicturePasswordView.OnFingerUpListener;
+
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.PointF;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.ParcelFileDescriptor;
@@ -26,6 +29,7 @@ public class SetupIntro extends Activity implements View.OnClickListener
 {
 	private static final int STEP_INTRO = 0;
 	private static final int STEP_CHOOSE_NUMBER = 1;
+	private static final int STEP_CONFIRM_NUMBER = 2;
 	
 	private static final int LOAD_IMAGE_CODE = 1;
 	
@@ -34,6 +38,8 @@ public class SetupIntro extends Activity implements View.OnClickListener
 	private SparseIntArray mButtonIds;
 	private Dialog mDialog;
 	private int mChosenNumber;
+	
+	private Bitmap mBitmap;
 
 	@Override
 	protected void onCreate( Bundle savedInstanceState )
@@ -153,6 +159,8 @@ public class SetupIntro extends Activity implements View.OnClickListener
 				
 				if ( image != null )
 				{
+					mBitmap = image;
+					
 					imageview.setImageBitmap( image );
 					imageview.setScaleType( ScaleType.CENTER_CROP );
 					
@@ -215,6 +223,45 @@ public class SetupIntro extends Activity implements View.OnClickListener
 		finish();
 	}
 	
+	private void confirmNumber()
+	{
+		final TextView title = ( TextView ) findViewById( R.id.headerText );
+		title.setText( R.string.confirm_title );
+		
+		final Button nextButton = ( Button ) findViewById( R.id.next_button );
+		nextButton.setEnabled( false );
+		
+		PicturePasswordView passwordView = ( PicturePasswordView ) findViewById( R.id.chosenImage );
+				
+		int unlockNumber = mChosenNumber;
+		PointF unlockPosition = passwordView.getHighlightPosition();
+		
+		passwordView.setFocusNumber( -1 );
+		passwordView.reset();
+		passwordView.setUnlockNumber( unlockNumber, unlockPosition.x, unlockPosition.y );
+		passwordView.setOnFingerUpListener( new OnFingerUpListener()
+		{
+			@Override
+			public void onFingerUp( PicturePasswordView picturePassword, boolean shouldUnlock )
+			{
+				if ( shouldUnlock )
+				{
+					nextButton.setEnabled( true );
+					picturePassword.setEnabled( false );
+					picturePassword.setHighlightUnlockNumber( true );
+					title.setText( R.string.done_title );
+				}
+				else
+				{
+					title.setText( R.string.try_again );
+					picturePassword.reset();
+				}
+			}
+		} );
+		
+		mStep = STEP_CONFIRM_NUMBER;
+	}
+	
 	public void onClick( View which )
 	{
 		if ( which.getId() == R.id.cancel_button )
@@ -229,14 +276,14 @@ public class SetupIntro extends Activity implements View.OnClickListener
 			}
 			else if ( mStep == STEP_CHOOSE_NUMBER )
 			{
-				
+				confirmNumber();
 			}
 		}
 		else if ( mButtonIds.indexOfKey( which.getId() ) > -1 )
 		{
 			mDialog.dismiss();
 			mChosenNumber = mButtonIds.get( which.getId() );
-			
+
 			final PicturePasswordView imageview = ( PicturePasswordView ) findViewById( R.id.chosenImage );
 			imageview.setFocusNumber( mChosenNumber );
 			imageview.setShowNumbers( true, true );
