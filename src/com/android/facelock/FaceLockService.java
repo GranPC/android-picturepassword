@@ -59,7 +59,7 @@ public class FaceLockService extends Service implements Callback
 			@Override
 			public void stopUi() throws RemoteException
 			{
-				FaceLockService.this.mHandler.sendEmptyMessage( 1 );
+				FaceLockService.this.mHandler.sendEmptyMessage( MSG_SERVICE_DISCONNECTED );
 			}
 
 			@Override
