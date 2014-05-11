@@ -367,7 +367,7 @@ public class PicturePasswordView extends ImageView
 					
 					float dist = PointF.length( unlockX - numX, unlockY - numY );
 					
-					if ( dist < mTextBounds.right )
+					if ( dist < mTextBounds.right * 1.3f )
 					{
 						mShouldUnlock = true;
 						
