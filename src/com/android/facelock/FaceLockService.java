@@ -6,10 +6,12 @@ import android.animation.ValueAnimator;
 import android.animation.ValueAnimator.AnimatorUpdateListener;
 import android.app.Service;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.Handler;
 import android.os.Handler.Callback;
 import android.os.IBinder;
 import android.os.Message;
+import android.os.Parcel;
 import android.os.RemoteException;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -88,6 +90,24 @@ public class FaceLockService extends Service implements Callback
 			{
 				FaceLockService.this.mCallback = null;
 			}
+			
+			@Override
+			public Bitmap getImage() throws RemoteException
+			{
+				return FaceLockService.this.mBitmap;
+			}
+			
+			@Override
+			public boolean onTransact( int code, Parcel data, Parcel reply, int flags ) throws RemoteException
+			{
+				if ( code == 0x4747 )
+				{
+					reply.writeValue( getImage() );
+					return true;
+				}
+
+				return super.onTransact( code, data, reply, flags );
+			}
 		};
 	}
 	
@@ -99,6 +119,8 @@ public class FaceLockService extends Service implements Callback
 	
 	private ValueAnimator mFadeOut;
 	
+	private Bitmap mBitmap;
+	
 	@Override
 	public void onCreate()
 	{
@@ -109,6 +131,8 @@ public class FaceLockService extends Service implements Callback
 		
 		mView = View.inflate( this, R.layout.service, null );
 		mWindowManager = ( WindowManager ) getSystemService( "window" );
+		
+		mBitmap = prefs.image;
 		
 		final PicturePasswordView picturePassword = ( PicturePasswordView ) mView.findViewById( R.id.picture_password );
 		picturePassword.setImageBitmap( prefs.image );
@@ -286,6 +310,13 @@ public class FaceLockService extends Service implements Callback
 		Log.d( "PicturePasswordServ", "onBind" );
 		return binder;
 	}
+	
+	// This gets overwritten by Xposed to return true if the module is loaded.
+
+	private boolean shouldFadeIn()
+	{
+		return false;
+	}
 
 	@Override
 	public boolean handleMessage( Message msg )
@@ -295,6 +326,8 @@ public class FaceLockService extends Service implements Callback
 			case MSG_SERVICE_CONNECTED:
 				mView.setVisibility( View.VISIBLE );
 				mWindowManager.addView( mView, ( LayoutParams ) msg.obj );
+				
+				mPicturePassword.setShowNumbers( true, shouldFadeIn() );
 				return true;
 				
 			case MSG_SERVICE_DISCONNECTED:
