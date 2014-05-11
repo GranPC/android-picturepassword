@@ -117,4 +117,36 @@ public class PicturePasswordUtils
 		
 		prefs.commit();
 	}
+	
+	public static int getFailureCounter( Context context )
+	{
+		SharedPreferences sharedPrefs = context.getSharedPreferences( "com.peniscorp.picturepassword_prefs", 0 );
+		
+		return sharedPrefs.getInt( "failure_counter", 0 );
+	}
+	
+	public static void setFailureCounter( Context context, int count )
+	{
+		SharedPreferences.Editor prefs = context.getSharedPreferences( "com.peniscorp.picturepassword_prefs", 0 ).edit();
+		
+		prefs.putInt( "failure_counter", count );
+		
+		prefs.commit();
+	}
+	
+	public static boolean getLockedOut( Context context )
+	{
+		SharedPreferences sharedPrefs = context.getSharedPreferences( "com.peniscorp.picturepassword_prefs", 0 );
+		
+		return sharedPrefs.getBoolean( "locked_out", false );
+	}
+	
+	public static void setLockedOut( Context context, boolean lockedOut )
+	{
+		SharedPreferences.Editor prefs = context.getSharedPreferences( "com.peniscorp.picturepassword_prefs", 0 ).edit();
+		
+		prefs.putBoolean( "locked_out", lockedOut );
+		
+		prefs.commit();
+	}
 }

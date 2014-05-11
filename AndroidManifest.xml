@@ -34,6 +34,14 @@
                 <action android:name="com.android.internal.policy.IFaceLockInterface" />
             </intent-filter>
         </service>
+        
+        <receiver
+            android:enabled="true"
+            android:name=".UnlockReceiver" >
+            <intent-filter>
+                <action android:name="android.intent.action.USER_PRESENT" />
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>

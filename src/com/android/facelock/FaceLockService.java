@@ -1,5 +1,9 @@
 package com.android.facelock;
 
+import android.animation.Animator;
+import android.animation.Animator.AnimatorListener;
+import android.animation.ValueAnimator;
+import android.animation.ValueAnimator.AnimatorUpdateListener;
 import android.app.Service;
 import android.content.Intent;
 import android.os.Handler;
@@ -53,6 +57,11 @@ public class FaceLockService extends Service implements Callback
 				
 				FaceLockService.this.mLayoutParams = p;
 				FaceLockService.this.mHandler.obtainMessage( MSG_SERVICE_CONNECTED, p ).sendToTarget();
+				
+				if ( PicturePasswordUtils.getLockedOut( FaceLockService.this ) )
+				{
+					lockOut( false );
+				}
 			}
 
 			@Override
@@ -78,7 +87,10 @@ public class FaceLockService extends Service implements Callback
 	Handler mHandler;
 	private PicturePasswordView mPicturePassword;
 	private long mLastFailure;
-	private int mFailureCounter;
+	private int mFailureCounter = 0;
+	private int mTotalFailureCounter = 0;
+	
+	private ValueAnimator mFadeOut;
 	
 	@Override
 	public void onCreate()
@@ -121,16 +133,68 @@ public class FaceLockService extends Service implements Callback
 				{
 					if ( System.currentTimeMillis() - mLastFailure < 800 )
 					{
-						Log.d( "PicturePassword", "incrementing failure counter" );
 						mFailureCounter++;
 						
-						if ( mFailureCounter >= 3 )
+						if ( mFailureCounter >= 2 )
 						{
 							FaceLockService.this.lockForSeconds( 5 );
+							mFailureCounter = 0;
 						}
 					}
+					
 					mLastFailure = System.currentTimeMillis();
+					
+					mTotalFailureCounter++;
+					PicturePasswordUtils.setFailureCounter( FaceLockService.this, mTotalFailureCounter );
+					
+   					if ( mTotalFailureCounter > 9 )
+					{
+						lockOut( true );
+					}
+
 					picturePassword.reset();
+				}
+			}
+		} );
+		
+		mFadeOut = ValueAnimator.ofFloat( 1, 0 );
+
+		mFadeOut.addListener( new AnimatorListener()
+		{
+			
+			@Override
+			public void onAnimationStart( Animator animation )
+			{
+			}
+			
+			@Override
+			public void onAnimationRepeat( Animator animation )
+			{
+			}
+			
+			@Override
+			public void onAnimationEnd( Animator animation )
+			{
+				FaceLockService.this.mHandler.sendEmptyMessage( MSG_CANCEL );
+			}
+			
+			@Override
+			public void onAnimationCancel( Animator animation )
+			{
+			}
+		} );
+
+		mFadeOut.addUpdateListener( new AnimatorUpdateListener()
+		{
+			
+			@Override
+			public void onAnimationUpdate( ValueAnimator animation )
+			{
+				if ( FaceLockService.this.mLayoutParams != null )
+				{
+					FaceLockService.this.mLayoutParams.flags = LayoutParams.FLAG_NOT_FOCUSABLE | LayoutParams.FLAG_NOT_TOUCHABLE;
+					FaceLockService.this.mLayoutParams.alpha = ( Float ) animation.getAnimatedValue();
+					FaceLockService.this.mWindowManager.updateViewLayout( FaceLockService.this.mView, FaceLockService.this.mLayoutParams );
 				}
 			}
 		} );
@@ -141,6 +205,23 @@ public class FaceLockService extends Service implements Callback
 		{
 			mPicturePassword.setShowNumbers( false );
 			lockForSeconds( PicturePasswordUtils.getWaitTime( this ) - System.currentTimeMillis() / 1000 );
+		}
+		
+		mTotalFailureCounter = PicturePasswordUtils.getFailureCounter( this );
+	}
+	
+	public void lockOut( boolean animate )
+	{
+		Log.d( "PicturePassword", "Locking out." );
+		PicturePasswordUtils.setLockedOut( this, true );
+		
+		if ( animate )
+		{
+			mFadeOut.start();
+		}
+		else
+		{
+			mHandler.sendEmptyMessage( MSG_CANCEL );
 		}
 	}
 	
@@ -200,6 +281,21 @@ public class FaceLockService extends Service implements Callback
 			case MSG_SERVICE_DISCONNECTED:
 				mView.setVisibility( View.GONE );
 				mWindowManager.removeView( mView );
+				return true;
+				
+			case MSG_CANCEL:
+				if ( mCallback != null )
+				{
+					try
+					{
+						mCallback.cancel();
+					}
+					catch ( RemoteException e )
+					{
+						// welp
+						e.printStackTrace();
+					}
+				}
 				return true;
 				
 			case MSG_ENABLE:
