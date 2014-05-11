@@ -121,6 +121,18 @@ public class FaceLockService extends Service implements Callback
 			@Override
 			public void onFingerUp( PicturePasswordView picturePassword, boolean shouldUnlock )
 			{
+				if ( FaceLockService.this.mCallback != null )
+				{
+					try
+					{
+						FaceLockService.this.mCallback.pokeWakelock( 3000 );
+					}
+					catch ( RemoteException e )
+					{
+						e.printStackTrace();
+					}
+				}
+
 				if ( shouldUnlock )
 				{
 					if ( FaceLockService.this.mCallback != null )
