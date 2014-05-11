@@ -26,6 +26,8 @@ public class FaceLockService extends Service implements Callback
 	private final int MSG_REPORT_FAILED_ATTEMPT = 4;
 	private final int MSG_POKE_WAKELOCK = 5;
 	
+	private final int MSG_ENABLE = 47;
+	
 	private final Stub binder;
 	protected LayoutParams mLayoutParams; 
 	protected IFaceLockCallback mCallback;
@@ -74,6 +76,9 @@ public class FaceLockService extends Service implements Callback
 	}
 	
 	Handler mHandler;
+	private PicturePasswordView mPicturePassword;
+	private long mLastFailure;
+	private int mFailureCounter;
 	
 	@Override
 	public void onCreate()
@@ -114,10 +119,65 @@ public class FaceLockService extends Service implements Callback
 				}
 				else
 				{
+					if ( System.currentTimeMillis() - mLastFailure < 800 )
+					{
+						Log.d( "PicturePassword", "incrementing failure counter" );
+						mFailureCounter++;
+						
+						if ( mFailureCounter >= 3 )
+						{
+							FaceLockService.this.lockForSeconds( 5 );
+						}
+					}
+					mLastFailure = System.currentTimeMillis();
 					picturePassword.reset();
 				}
 			}
 		} );
+		
+		mPicturePassword = picturePassword;
+		
+		if ( PicturePasswordUtils.getWaitTime( this ) > System.currentTimeMillis() / 1000 )
+		{
+			mPicturePassword.setShowNumbers( false );
+			lockForSeconds( PicturePasswordUtils.getWaitTime( this ) - System.currentTimeMillis() / 1000 );
+		}
+	}
+	
+	public void lockForSeconds( long seconds )
+	{
+		mPicturePassword.setEnabled( false );
+		
+		final long sleepTime = seconds * 1000;
+		final PicturePasswordView view = mPicturePassword;
+		final Handler handler = mHandler;
+
+		PicturePasswordUtils.setWaitTime( this, seconds );
+		
+		if ( view.isShowNumbers() )
+		{
+			view.setShowNumbers( false, false );
+		}
+		
+		Thread thread = new Thread()
+		{
+			@Override
+			public void run()
+			{
+				try
+				{
+					sleep( sleepTime );
+					
+					handler.sendEmptyMessage( MSG_ENABLE );
+				}
+				catch ( InterruptedException e )
+				{
+					e.printStackTrace();
+				}
+			}
+		};
+
+		thread.start();
 	}
 
 	@Override
@@ -138,8 +198,14 @@ public class FaceLockService extends Service implements Callback
 				return true;
 				
 			case MSG_SERVICE_DISCONNECTED:
-				mView.setVisibility( View.INVISIBLE );
+				mView.setVisibility( View.GONE );
 				mWindowManager.removeView( mView );
+				return true;
+				
+			case MSG_ENABLE:
+				mPicturePassword.reset();
+				mPicturePassword.setShowNumbers( true, true );
+				mPicturePassword.setEnabled( true );
 				return true;
 		}
 		return false;

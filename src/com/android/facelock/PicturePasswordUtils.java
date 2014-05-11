@@ -94,4 +94,27 @@ public class PicturePasswordUtils
 		
 		return true;
 	}
+	
+	public static long getWaitTime( Context context )
+	{
+		SharedPreferences sharedPrefs = context.getSharedPreferences( "com.peniscorp.picturepassword_prefs", 0 );
+		
+		long time = sharedPrefs.getLong( "wait_until", 0 );
+		
+		if ( time > System.currentTimeMillis() / 1000 + 30 )
+		{
+			time = System.currentTimeMillis() / 1000 + 30;
+		}
+		
+		return time;
+	}
+	
+	public static void setWaitTime( Context context, long seconds )
+	{
+		SharedPreferences.Editor prefs = context.getSharedPreferences( "com.peniscorp.picturepassword_prefs", 0 ).edit();
+		
+		prefs.putLong( "wait_until", System.currentTimeMillis() / 1000 + seconds );
+		
+		prefs.commit();
+	}
 }
