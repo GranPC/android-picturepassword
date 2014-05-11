@@ -11,6 +11,7 @@ import android.os.Handler.Callback;
 import android.os.IBinder;
 import android.os.Message;
 import android.os.RemoteException;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
@@ -46,6 +47,12 @@ public class FaceLockService extends Service implements Callback
 			@Override
 			public void startUi( IBinder windowToken, int x, int y, int w, int h, boolean useLiveliness ) throws RemoteException
 			{
+				DisplayMetrics metrics = new DisplayMetrics();
+				mWindowManager.getDefaultDisplay().getRealMetrics( metrics );
+				
+				Log.d( "PicturePassword", "Appearing at " + ( y + h ) );
+				if ( y + h > metrics.heightPixels ) return;
+
 				LayoutParams p = new LayoutParams( LayoutParams.TYPE_APPLICATION_PANEL );
 				p.flags = LayoutParams.FLAG_HARDWARE_ACCELERATED | LayoutParams.FLAG_NOT_FOCUSABLE;
 				p.token = windowToken;
@@ -279,8 +286,11 @@ public class FaceLockService extends Service implements Callback
 				return true;
 				
 			case MSG_SERVICE_DISCONNECTED:
-				mView.setVisibility( View.GONE );
-				mWindowManager.removeView( mView );
+				if ( mView != null )
+				{
+					mView.setVisibility( View.GONE );
+					mWindowManager.removeView( mView );
+				}
 				return true;
 				
 			case MSG_CANCEL:
