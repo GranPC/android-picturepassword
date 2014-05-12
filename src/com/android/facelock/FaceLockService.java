@@ -117,6 +117,8 @@ public class FaceLockService extends Service implements Callback
 	private int mFailureCounter = 0;
 	private int mTotalFailureCounter = 0;
 	
+	private int mSuccessStreak = 0;
+	
 	private ValueAnimator mFadeOut;
 	
 	private Bitmap mBitmap;
@@ -156,14 +158,21 @@ public class FaceLockService extends Service implements Callback
 						e.printStackTrace();
 					}
 				}
-
+				
 				if ( shouldUnlock )
+				{
+					mSuccessStreak++;
+					mPicturePassword.reset();
+				}
+
+				if ( mSuccessStreak == 2 )
 				{
 					if ( FaceLockService.this.mCallback != null )
 					{
 						try
 						{
 							FaceLockService.this.mCallback.unlock();
+							mSuccessStreak = 0;
 						}
 						catch ( RemoteException e )
 						{
@@ -172,8 +181,10 @@ public class FaceLockService extends Service implements Callback
 						}
 					}
 				}
-				else
+				else if ( !shouldUnlock )
 				{
+					mSuccessStreak = 0;
+					
 					if ( System.currentTimeMillis() - mLastFailure < 800 )
 					{
 						mFailureCounter++;
