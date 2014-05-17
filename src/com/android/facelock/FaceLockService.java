@@ -344,8 +344,15 @@ public class FaceLockService extends Service implements Callback
 			case MSG_SERVICE_DISCONNECTED:
 				if ( mView != null )
 				{
-					mView.setVisibility( View.GONE );
-					mWindowManager.removeView( mView );
+					try
+					{
+						mView.setVisibility( View.GONE );
+						mWindowManager.removeView( mView );
+					}
+					catch ( Exception e )
+					{
+						// oopsie!
+					}
 				}
 				return true;
 				
