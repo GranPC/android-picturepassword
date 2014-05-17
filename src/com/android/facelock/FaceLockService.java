@@ -28,10 +28,7 @@ public class FaceLockService extends Service implements Callback
 {
 	private final int MSG_SERVICE_CONNECTED = 0;
 	private final int MSG_SERVICE_DISCONNECTED = 1;
-	private final int MSG_UNLOCK = 2;
 	private final int MSG_CANCEL = 3;
-	private final int MSG_REPORT_FAILED_ATTEMPT = 4;
-	private final int MSG_POKE_WAKELOCK = 5;
 	
 	private final int MSG_ENABLE = 47;
 	
