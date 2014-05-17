@@ -24,6 +24,7 @@ public class PicturePasswordView extends ImageView
 		void onFingerUp( PicturePasswordView picturePassword, boolean shouldUnlock );
 	}
 
+	// The seed for the random number generator
 	private int mSeed;
 	
 	private final boolean DEBUG = false;
@@ -31,46 +32,62 @@ public class PicturePasswordView extends ImageView
 	private static final int DEFAULT_GRID_SIZE = 10;
 	private static final int FONT_SIZE = 20;
 	
+	// How far we have scrolled from (0, 0)
 	private float mScrollX = 0;
 	private float mScrollY = 0;
 	
+	// The current position of the finger, used for scrolling calculations
 	private float mFingerX;
 	private float mFingerY;
 	
+	// Size of the number 8.
 	private Rect mTextBounds;
 	
-	private Paint mPaint;
-	private Paint mCirclePaint;
+	// Paint objects
+	private Paint mPaint;        // Paint for text
+	private Paint mCirclePaint;  // Paint for circles
 	
+	// Grid size and grid size without randomization 
 	private int mGridSize;
 	private int mActualSize;
 	
+	// Whether we should show numbers or not
 	private boolean mShowNumbers;
 	
+	// Scalar for fade animations
 	private float mScale;
 	private ObjectAnimator mAnimator;
 	
+	// PRNG object
 	private Random mRandom;
 	
+	// Whether we should highlight any number, and if so, which number
 	private boolean mHighlight = false;
 	private int mHighlightX;
 	private int mHighlightY;
 	
+	// The position in the image of the highlighted number (0..1)
 	private float mHighlightImageX;
 	private float mHighlightImageY;
 	
+	// Listener we should notify when the user lifts their finger
 	private OnFingerUpListener mListener;
 
+	// Number + position combo required to unlock device
 	private int mUnlockNumber = -1;
 	private float mUnlockNumberX = -1;
 	private float mUnlockNumberY = -1;
 	
+	// Whether we should unlock next time the user lifts their finger
 	private boolean mShouldUnlock = false;
 	
+	// Whether we should highlight our unlock number
 	private boolean mHighlightUnlockNumber = false;
 	
+	// Whether we're resetting. Used in setScale to reset parameters when scale is 0
 	private boolean mResetting = false;
 	
+	// Whether the user has enabled grid size randomization
 	private boolean mRandomGridSize = false;
 	
 	private int getNumberForXY( int x, int y )
@@ -91,6 +108,10 @@ public class PicturePasswordView extends ImageView
 		
 		mGridSize = DEFAULT_GRID_SIZE;
 		
+		
+		///////////////////////
+		// Initialize Paints //
+		///////////////////////
 		final DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();
 		final float shadowOff = TypedValue.applyDimension( TypedValue.COMPLEX_UNIT_DIP, 2, displayMetrics );
 		
@@ -103,7 +124,6 @@ public class PicturePasswordView extends ImageView
 		
 		mPaint.setAntiAlias( true );
 
-
 		mCirclePaint = new Paint( Paint.ANTI_ALIAS_FLAG );
 
 		mCirclePaint.setColor( Color.argb( 255, 0x33, 0xb5, 0xe5 ) );
@@ -114,15 +134,14 @@ public class PicturePasswordView extends ImageView
 		/* mCirclePaint.setShadowLayer( 5, 0, 0, Color.WHITE );
 		
 		setLayerType( LAYER_TYPE_SOFTWARE, mCirclePaint ); */ // this feels too laggy
-
 		
 		mTextBounds = new Rect();
 		mPaint.getTextBounds( "8", 0, 1, mTextBounds );
-
 		
-		TypedArray a = context.getTheme().obtainStyledAttributes( attrs, R.styleable.PicturePasswordView, 0, 0 );
+		///////////////////////////
+		// Initialize animations //
+		///////////////////////////
 
-		mShowNumbers = true;
 		mScale = 1.0f;
 		
 		mAnimator = new ObjectAnimator();
@@ -130,6 +149,14 @@ public class PicturePasswordView extends ImageView
 		mAnimator.setFloatValues( 0, 1 );
 		mAnimator.setPropertyName( "scale" );
 		mAnimator.setDuration( 200 );
+		
+		///////////////////////
+		// Hide/show numbers //
+		///////////////////////
+		
+		mShowNumbers = true;
+		
+		TypedArray a = context.getTheme().obtainStyledAttributes( attrs, R.styleable.PicturePasswordView, 0, 0 );
 		
 		try
 		{
@@ -151,7 +178,10 @@ public class PicturePasswordView extends ImageView
 		mResetting = true;
 		
 		mAnimator.setDuration( 400 );
+		
+		// Repeat 0 to ensure setScale( 0 ) is called at least once
 		mAnimator.setFloatValues( 1, 0, 0, 1 );
+
 		mAnimator.start();
 		
 		setEnabled( false );
