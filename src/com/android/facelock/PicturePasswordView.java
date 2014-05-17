@@ -32,6 +32,9 @@ public class PicturePasswordView extends ImageView
 	private static final int DEFAULT_GRID_SIZE = 10;
 	private static final int FONT_SIZE = 20;
 	
+	private static final int COLOR_UNLOCK_CIRCLE_OFF = Color.rgb( 150, 150, 150 );
+	private static final int COLOR_UNLOCK_CIRCLE_ON  = Color.rgb( 132, 212,  39 );
+	
 	// How far we have scrolled from (0, 0)
 	private float mScrollX = 0;
 	private float mScrollY = 0;
@@ -46,6 +49,7 @@ public class PicturePasswordView extends ImageView
 	// Paint objects
 	private Paint mPaint;        // Paint for text
 	private Paint mCirclePaint;  // Paint for circles
+	private Paint mUnlockPaint;  // Paint for unlock circles
 	
 	// Grid size and grid size without randomization 
 	private int mGridSize;
@@ -90,6 +94,21 @@ public class PicturePasswordView extends ImageView
 	// Whether the user has enabled grid size randomization
 	private boolean mRandomGridSize = false;
 	
+	// Number of unlock circles to show at the bottom
+	private int mUnlockCircles = 0;
+	
+	// Number of filled unlock circles
+	// The decimal part is used to fade in/out the rightmost circle
+	private float mUnlockProgress = 0;
+	
+	// Size/spacing/padding of unlock circles
+	private int mCircleSize;
+	private int mCircleSpacing;
+	private int mCirclePadding;
+	
+	// Animator for circle progress
+	private ObjectAnimator mCircleAnimator;
+	
 	private int getNumberForXY( int x, int y )
 	{
 		// TODO: still sucks
@@ -107,7 +126,6 @@ public class PicturePasswordView extends ImageView
 		mSeed = mRandom.nextInt();
 		
 		mGridSize = DEFAULT_GRID_SIZE;
-		
 		
 		///////////////////////
 		// Initialize Paints //
@@ -131,9 +149,7 @@ public class PicturePasswordView extends ImageView
 		mCirclePaint.setStyle( Paint.Style.STROKE );
 		mCirclePaint.setStrokeWidth( 5 );
 		
-		/* mCirclePaint.setShadowLayer( 5, 0, 0, Color.WHITE );
-		
-		setLayerType( LAYER_TYPE_SOFTWARE, mCirclePaint ); */ // this feels too laggy
+		mUnlockPaint = new Paint( Paint.ANTI_ALIAS_FLAG );
 		
 		mTextBounds = new Rect();
 		mPaint.getTextBounds( "8", 0, 1, mTextBounds );
@@ -149,6 +165,11 @@ public class PicturePasswordView extends ImageView
 		mAnimator.setFloatValues( 0, 1 );
 		mAnimator.setPropertyName( "scale" );
 		mAnimator.setDuration( 200 );
+		
+		mCircleAnimator = new ObjectAnimator();
+		mCircleAnimator.setTarget( this );
+		mCircleAnimator.setPropertyName( "internalUnlockProgress" ); // ugh!
+		mCircleAnimator.setDuration( 300 );
 		
 		///////////////////////
 		// Hide/show numbers //
@@ -166,6 +187,13 @@ public class PicturePasswordView extends ImageView
 		{
 			a.recycle();
 		}
+		
+		//////////////////////
+		// Initialize sizes //
+		//////////////////////
+		mCircleSize = ( int ) TypedValue.applyDimension( TypedValue.COMPLEX_UNIT_DIP, 6, displayMetrics );
+		mCircleSpacing = ( int ) TypedValue.applyDimension( TypedValue.COMPLEX_UNIT_DIP, 5, displayMetrics );
+		mCirclePadding = ( int ) TypedValue.applyDimension( TypedValue.COMPLEX_UNIT_DIP, 10, displayMetrics );
 	}
 	
 	public boolean isShowNumbers()
@@ -351,6 +379,31 @@ public class PicturePasswordView extends ImageView
 		mHighlightUnlockNumber = highlight;
 	}
 	
+	public void setUnlockCircles( int circles )
+	{
+		mUnlockCircles = circles;
+	}
+	
+	public void setInternalUnlockProgress( float progress )
+	{
+		mUnlockProgress = progress;
+	}
+	
+	public float getInternalUnlockProgress()
+	{
+		return mUnlockProgress;
+	}
+	
+	public void setUnlockProgress( int progress )
+	{
+		mCircleAnimator.setFloatValues( mUnlockProgress, progress );
+		mCircleAnimator.start();
+	}
+	
+	private static int lerp( int a, int b, float t )
+	{
+		return ( int ) ( t * ( b - a ) + a );
+	}
 	@Override
 	protected void onDraw( Canvas canvas )
 	{
@@ -437,6 +490,38 @@ public class PicturePasswordView extends ImageView
 			}
 			
 			drawX += cellSize;
+		}
+		
+		int circlesWidth = mCircleSize * mUnlockCircles + mCircleSpacing * ( mUnlockCircles - 1 );
+		
+		int x = canvas.getWidth() / 2 - circlesWidth / 2;
+		int y = canvas.getHeight() - mCirclePadding - mCircleSize / 2;
+		int fullCircles = ( int ) Math.floor( mUnlockProgress );
+		float partCircles = mUnlockProgress - fullCircles;
+		
+		for ( int i = 1; i < mUnlockCircles + 1; i++ )
+		{
+			if ( i <= fullCircles )
+			{
+				mUnlockPaint.setColor( COLOR_UNLOCK_CIRCLE_ON );
+			}
+			else if ( i == fullCircles + 1 )
+			{
+				int r = lerp( Color.red( COLOR_UNLOCK_CIRCLE_OFF ), Color.red( COLOR_UNLOCK_CIRCLE_ON ), partCircles );
+				int g = lerp( Color.green( COLOR_UNLOCK_CIRCLE_OFF ), Color.green( COLOR_UNLOCK_CIRCLE_ON ), partCircles );
+				int b = lerp( Color.blue( COLOR_UNLOCK_CIRCLE_OFF ), Color.blue( COLOR_UNLOCK_CIRCLE_ON ), partCircles );
+				
+				mUnlockPaint.setColor( Color.rgb( r, g, b ) );
+			}
+			else
+			{
+				mUnlockPaint.setColor( COLOR_UNLOCK_CIRCLE_OFF );
+			}
+			
+			mUnlockPaint.setAlpha( 150 );
+			canvas.drawCircle( x + mCircleSize / 2, y, mCircleSize, mUnlockPaint );
+			
+			x += mCircleSize * 2 + mCircleSpacing;
 		}
 		
 		if ( DEBUG )

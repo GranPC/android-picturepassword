@@ -139,6 +139,7 @@ public class FaceLockService extends Service implements Callback
 		picturePassword.setRandomize( prefs.randomize );
 		picturePassword.setGridSize( prefs.gridSize );
 		picturePassword.enforceNumber( prefs.unlockNumber );
+		picturePassword.setUnlockCircles( 2 );
 		
 		picturePassword.setOnFingerUpListener( new OnFingerUpListener()
 		{
@@ -206,6 +207,8 @@ public class FaceLockService extends Service implements Callback
 
 					picturePassword.reset();
 				}
+				
+				picturePassword.setUnlockProgress( mSuccessStreak );
 			}
 		} );
 		
