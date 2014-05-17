@@ -8,6 +8,7 @@ import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Point;
 import android.graphics.PointF;
 import android.graphics.Rect;
 import android.util.AttributeSet;
@@ -221,37 +222,48 @@ public class PicturePasswordView extends ImageView
 		invalidate();
 	}
 	
+	public Point findNumberInGrid( int number )
+	{
+		if ( number < 0 || number > 9 ) return null;
+		
+		for ( int x = 0; x < mGridSize; x++ )
+		{
+			for ( int y = 0; y < mGridSize; y++ )
+			{
+				if ( getNumberForXY( x, y ) == number )
+				{
+					return new Point( x, y );
+				}
+			}
+		}
+		
+		return null;
+	}
+	
+	public void enforceNumber( int number )
+	{
+		if ( number < 0 || number > 9 ) return;
+		
+		while ( findNumberInGrid( number ) == null )
+		{
+			mSeed = mRandom.nextInt(); 
+		}
+	}
+	
 	public void setFocusNumber( int number )
 	{
 		if ( number >= 0 && number <= 9 )
 		{
 			mHighlight = true;
 			
-			boolean found = false;
-			
 			mScrollX = mScrollY = 0;
 			
-			while ( !found )
-			{
-				for ( int x = 0; x < mGridSize; x++ )
-				{
-					for ( int y = 0; y < mGridSize; y++ )
-					{
-						if ( getNumberForXY( x, y ) == number )
-						{
-							mHighlightX = x;
-							mHighlightY = y;
-							found = true;
-							break;
-						}
-					}
-				}
-				
-				if ( !found )
-				{
-					mSeed = mRandom.nextInt();
-				}
-			}
+			enforceNumber( number );
+			
+			Point position = findNumberInGrid( number );
+
+			mHighlightX = position.x;
+			mHighlightY = position.y;
 		}
 		else
 		{
