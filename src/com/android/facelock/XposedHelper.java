@@ -24,19 +24,35 @@ public class XposedHelper implements IXposedHookLoadPackage
 	{
 		try
 		{
-			if ( !lpparam.packageName.equals( "com.android.keyguard" ) && !lpparam.packageName.equals( "com.android.facelock" ) ) return;
+			if ( !lpparam.packageName.equals( "com.android.keyguard" ) && !lpparam.packageName.equals( "com.android.facelock" ) && !lpparam.packageName.equals( "com.android.settings" ) ) return;
+			
+			if ( lpparam.packageName.equals( "com.android.settings" ) )
+			{
+				// Allow password as a fallback
+				findAndHookMethod( "com.android.settings.ChooseLockGeneric.ChooseLockGenericFragment", lpparam.classLoader, "allowedForFallback", String.class, new XC_MethodHook()
+				{
+					@Override
+					protected void afterHookedMethod( MethodHookParam param ) throws Throwable
+					{
+						if ( ( ( String ) param.args[ 0 ] ).equals( "unlock_set_password" ) )
+							param.setResult( true );
+					}
+				} );
+				return;
+			}
 			
 			if ( lpparam.packageName.equals( "com.android.facelock" ) )
 			{
 				findAndHookMethod( "com.android.facelock.FaceLockService", lpparam.classLoader, "shouldFadeIn", new XC_MethodReplacement()
 				{
-					
 					@Override
 					protected Object replaceHookedMethod( MethodHookParam param ) throws Throwable
 					{
 						return true;
 					}
 				} );
+				
+				return;
 			}
 			
 			// Disable cancel button and change bg image 1/2
