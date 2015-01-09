@@ -7,6 +7,8 @@ import com.android.facelock.PicturePasswordView.OnFingerUpListener;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.app.PendingIntent;
+import android.app.PendingIntent.CanceledException;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -15,6 +17,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.ParcelFileDescriptor;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.util.SparseIntArray;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
@@ -282,10 +285,29 @@ public class SetupIntro extends Activity implements View.OnClickListener
 		}
 		else
 		{
-			Intent chooseIntent = new Intent();
-			chooseIntent.setClassName( "com.android.settings", "com.android.settings.ChooseLockGeneric" );
-			chooseIntent.putExtra( "lockscreen.biometric_weak_fallback", true );
-			startActivity( chooseIntent );
+			PendingIntent requestedIntent = getIntent().getParcelableExtra( "PendingIntent" );
+			
+			boolean ok = false;
+			if ( requestedIntent != null )
+			{
+				try
+				{
+					requestedIntent.send();
+					ok = true;
+				}
+				catch ( CanceledException e )
+				{
+					ok = false;
+				}
+			}
+			else
+			{
+				Log.e( "PicturePassword", "PendingIntent was null or canceled! This is probably bad!" );
+				Intent chooseIntent = new Intent();
+				chooseIntent.setClassName( "com.android.settings", "com.android.settings.ChooseLockGeneric" );
+				chooseIntent.putExtra( "lockscreen.biometric_weak_fallback", true );
+				startActivity( chooseIntent );
+			}
 			finish();
 		}
 	}
